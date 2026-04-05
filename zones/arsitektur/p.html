@@ -1,0 +1,25 @@
+<form id="sop-form" onsubmit="event.preventDefault();">
+    <div class="form-group">
+        <label>1. Nama Projek</label>
+        <input type="text" id="sop-name" placeholder="Cth: KetickPOS" required>
+    </div>
+    <div class="form-group">
+        <label>2. Masalah / Objektif Utama</label>
+        <textarea id="sop-obj" rows="3" placeholder="Apa masalah yang sistem ini selesaikan?"></textarea>
+    </div>
+    <div class="form-group">
+        <label>3. Pengguna Sasaran (Roles)</label>
+        <input type="text" id="sop-users" placeholder="Cth: Staf Kaunter, Admin Manager">
+    </div>
+    <div class="form-group">
+        <label>4. Link Bilik Gerakan</label>
+        <input type="url" id="sop-room" placeholder="Link WhatsApp Group / Slack / Trello">
+    </div>
+    <div class="form-group">
+        <label>5. Sempadan Projek (Boundaries)</label>
+        <textarea id="sop-scope" rows="3" placeholder="Fungsi yang TIDAK AKAN dibuat dalam Versi 1.0"></textarea>
+    </div>
+    
+    <button type="button" class="btn-save" onclick="window.saveIntakeData(false)">Simpan Draf (Kekal Pending)</button>
+    <button type="button" class="btn-greenlight" onclick="window.saveIntakeData(true)">Berikan Greenlight (Mula Aktif)</button>
+</form>
