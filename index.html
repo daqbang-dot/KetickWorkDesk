@@ -47,10 +47,10 @@
                     <p>Pendaftaran, Model Data & Logik</p>
                     <div class="status">○ Connecting...</div>
                     <div class="admin-controls">
-                        <button onclick="openWorkspace('arsitektur', 'p')" style="border-color: var(--yellow); color: var(--yellow);">P</button>
-                        <button onclick="openWorkspace('arsitektur', 'a')">A</button>
-                        <button onclick="openWorkspace('arsitektur', 'd')">D</button>
-                        <button onclick="openWorkspace('arsitektur', 'ok')" style="color:var(--green)">OK</button>
+                        <button onclick="window.openWorkspace('zone1', 'arsitektur', 'p')" style="border-color: var(--yellow); color: var(--yellow);">P</button>
+                        <button onclick="window.updateStatus('zone1', 'Active')">A</button>
+                        <button onclick="window.updateStatus('zone1', 'Designing')">D</button>
+                        <button onclick="window.updateStatus('zone1', 'Done')" style="color:var(--green)">OK</button>
                     </div>
                 </div>
                 <div class="node" id="zone2">
@@ -58,19 +58,41 @@
                     <p>HTML, CSS, JS Architecture.</p>
                     <div class="status">○ Connecting...</div>
                     <div class="admin-controls">
-                        <button onclick="openWorkspace('struktur_fail', 'p')">P</button>
-                        <button onclick="openWorkspace('struktur_fail', 'a')">A</button>
-                        <button onclick="openWorkspace('struktur_fail', 'd')">D</button>
-                        <button onclick="openWorkspace('struktur_fail', 'ok')">OK</button>
+                        <button onclick="window.updateStatus('zone2', 'Pending')">P</button>
+                        <button onclick="window.updateStatus('zone2', 'Active')">A</button>
+                        <button onclick="window.updateStatus('zone2', 'Designing')">D</button>
+                        <button onclick="window.updateStatus('zone2', 'Done')" style="color:var(--green)">OK</button>
                     </div>
                 </div>
+                <div class="node" id="zone3">
+                    <h3><i class="fas fa-bridge"></i>3. Integrasi</h3>
+                    <p>GitHub & Firebase Connection.</p>
+                    <div class="status">○ Connecting...</div>
+                    <div class="admin-controls">
+                        <button onclick="window.updateStatus('zone3', 'Pending')">P</button>
+                        <button onclick="window.updateStatus('zone3', 'Active')">A</button>
+                        <button onclick="window.updateStatus('zone3', 'Designing')">D</button>
+                        <button onclick="window.updateStatus('zone3', 'Done')" style="color:var(--green)">OK</button>
+                    </div>
                 </div>
+                <div class="node" id="zone4">
+                    <h3><i class="fas fa-paper-plane"></i>4. Workflow</h3>
+                    <p>Sequence & Deployment.</p>
+                    <div class="status">○ Connecting...</div>
+                    <div class="admin-controls">
+                        <button onclick="window.updateStatus('zone4', 'Pending')">P</button>
+                        <button onclick="window.updateStatus('zone4', 'Active')">A</button>
+                        <button onclick="window.updateStatus('zone4', 'Designing')">D</button>
+                        <button onclick="window.updateStatus('zone4', 'Done')" style="color:var(--green)">OK</button>
+                    </div>
+                </div>
+            </div>
             
             <div class="ai-panel">
                 <h3>🤖 AI Consultant</h3>
-                <p id="ai-suggestion">Membasuh enjin sistem...</p>
+                <p id="ai-suggestion">Sedia membantu menguruskan fasa SOP anda.</p>
             </div>
-            <button id="reset-btn" onclick="resetConfig()">Reset Local Config</button>
+            <button id="reset-btn" onclick="window.resetConfig()">Reset Local Config</button>
         </div>
     </main>
 
@@ -78,7 +100,7 @@
         <div class="workspace-card">
             <div class="workspace-header">
                 <h2><i class="fas fa-clipboard-list"></i> SOP: <span id="ws-zone-title">Loading...</span></h2>
-                <button class="close-btn" onclick="closeWorkspace()">&times;</button>
+                <button class="close-btn" onclick="window.closeWorkspace()">&times;</button>
             </div>
             <div id="workspace-content">
                 </div>
