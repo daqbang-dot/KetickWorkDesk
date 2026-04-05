@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KETICK WorkDesk | Dashboard</title>
+    <title>KETICK WorkDesk | Command Center</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -89,7 +89,7 @@
             </div>
             
             <div class="ai-panel">
-                <h3>🤖 AI Consultant</h3>
+                <h3>🤖 AI Consultant (Ditepi)</h3>
                 <p id="ai-suggestion">Sedia membantu menguruskan fasa SOP anda.</p>
             </div>
             <button id="reset-btn" onclick="window.resetConfig()">Reset Local Config</button>
@@ -99,11 +99,10 @@
     <div id="workspace-modal" class="modal-overlay">
         <div class="workspace-card">
             <div class="workspace-header">
-                <h2><i class="fas fa-clipboard-list"></i> SOP: <span id="ws-zone-title">Loading...</span></h2>
+                <h2><i class="fas fa-satellite-dish"></i> WAR ROOM: <span id="ws-zone-title">Loading...</span></h2>
                 <button class="close-btn" onclick="window.closeWorkspace()">&times;</button>
             </div>
-            <div id="workspace-content">
-                </div>
+            <div id="workspace-content"></div>
         </div>
     </div>
 
