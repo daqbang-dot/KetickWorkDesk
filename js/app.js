@@ -22,6 +22,7 @@ if (!config) {
         location.reload();
     }
 } else {
+    // INIT FIREBASE
     const firebaseConfig = {
         apiKey: config.apiKey,
         authDomain: `${config.projectId}.firebaseapp.com`,
@@ -36,6 +37,7 @@ if (!config) {
     window.currentWorkspaceZone = '';
     window.currentChatMode = 'gemini';
 
+    // FUNGSI UMUM KAWALAN STATUS
     window.updateStatus = function(zoneId, newStatus) {
         set(ref(db, `zones/${zoneId}/status`), newStatus)
             .then(() => document.getElementById('ai-suggestion').innerText = `Tindakan: ${zoneId} -> ${newStatus}.`)
@@ -56,8 +58,10 @@ if (!config) {
             const html = await response.text();
             contentArea.innerHTML = html;
 
-            if (folderName === 'arsitektur' && phaseName === 'p') {
-                loadIntakeDraft(zoneId);
+            // Tarik data berdasarkan Fasa yang dibuka
+            if (folderName === 'arsitektur') {
+                if (phaseName === 'p') loadIntakeDraft(zoneId);
+                if (phaseName === 'a') loadArchDraft(zoneId);
             }
         } catch (error) {
             contentArea.innerHTML = `<p style="color:var(--red); text-align:center; padding: 20px;">Ralat: Sila bina fail <b>zones/${folderName}/${phaseName}.html</b> dahulu.</p>`;
@@ -68,7 +72,6 @@ if (!config) {
         document.getElementById('workspace-modal').style.display = 'none';
     };
 
-    // --- LOGIK BOTTOM NAVIGATION TABS (BARU DITAMBAH) ---
     window.switchAppTab = function(viewId, btnElement) {
         document.querySelectorAll('.app-nav-item').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
@@ -77,6 +80,9 @@ if (!config) {
         document.getElementById(`view-${viewId}`).classList.add('active');
     };
 
+    // ==========================================
+    // LOGIK FASA [ P ] : INTAKE
+    // ==========================================
     async function loadIntakeDraft(zoneId) {
         try {
             const snapshot = await get(child(ref(db), `zones/${zoneId}/sop_data`));
@@ -87,7 +93,7 @@ if (!config) {
                 if(document.getElementById('sop-users')) document.getElementById('sop-users').value = data.users || '';
                 if(document.getElementById('sop-scope')) document.getElementById('sop-scope').value = data.scope || '';
             }
-        } catch (error) { console.error("Gagal load draf:", error); }
+        } catch (error) { console.error("Gagal load draf P:", error); }
     }
 
     window.saveIntakeData = function(isGreenlight) {
@@ -102,17 +108,48 @@ if (!config) {
 
         set(ref(db, `zones/${zoneId}/sop_data`), data).then(() => {
             if (projName) document.getElementById('dashboard-project-name').innerText = projName;
-            
+            if (isGreenlight) window.updateStatus(zoneId, 'Active');
+            else window.updateStatus(zoneId, 'Pending');
+            window.closeWorkspace();
+        });
+    };
+
+    // ==========================================
+    // LOGIK FASA [ A ] : ARSITEKTUR
+    // ==========================================
+    async function loadArchDraft(zoneId) {
+        try {
+            const snapshot = await get(child(ref(db), `zones/${zoneId}/arch_data`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if(document.getElementById('arch-json')) document.getElementById('arch-json').value = data.jsonSchema || '';
+                if(document.getElementById('arch-logic')) document.getElementById('arch-logic').value = data.logicMap || '';
+            }
+        } catch (error) { console.error("Gagal load draf A:", error); }
+    }
+
+    window.saveArchData = function(isGreenlight) {
+        const zoneId = window.currentWorkspaceZone;
+        const data = {
+            jsonSchema: document.getElementById('arch-json').value,
+            logicMap: document.getElementById('arch-logic').value
+        };
+
+        set(ref(db, `zones/${zoneId}/arch_data`), data).then(() => {
             if (isGreenlight) {
-                window.updateStatus(zoneId, 'Active');
-                document.getElementById('ai-suggestion').innerText = `Greenlight Diberikan! Projek kini Aktif.`;
+                window.updateStatus(zoneId, 'Designing');
+                document.getElementById('ai-suggestion').innerText = `Arsitektur Disahkan! Mula fasa Designing (D).`;
             } else {
-                window.updateStatus(zoneId, 'Pending');
+                window.updateStatus(zoneId, 'Active');
+                document.getElementById('ai-suggestion').innerText = `Draf Arsitektur (JSON) disimpan.`;
             }
             window.closeWorkspace();
         });
     };
 
+    // ==========================================
+    // LOGIK CHAT & AI 
+    // ==========================================
     window.switchChatMode = function(mode) {
         window.currentChatMode = mode;
         const tabs = document.querySelectorAll('.chat-tab');
@@ -127,9 +164,7 @@ if (!config) {
         if(mode === 'slack') welcomeMsg.innerHTML = "Log API Slack diaktifkan. (Simulasi)";
     }
 
-    window.handleChatEnter = function(e) {
-        if(e.key === 'Enter') window.sendChatMessage();
-    }
+    window.handleChatEnter = function(e) { if(e.key === 'Enter') window.sendChatMessage(); }
 
     window.sendChatMessage = async function() {
         const inputField = document.getElementById('chat-input');
@@ -170,10 +205,13 @@ if (!config) {
                 return;
             }
         }
+        
+        // Baca data dari mana-mana textarea yang ada di skrin (untuk AI faham context)
+        const projName = document.getElementById('dashboard-project-name').innerText;
+        let contextData = "";
+        if(document.getElementById('arch-json')) contextData = "Skema Semasa: " + document.getElementById('arch-json').value;
 
-        const projName = document.getElementById('sop-name') ? document.getElementById('sop-name').value : "Projek Baru";
-        const projObj = document.getElementById('sop-obj') ? document.getElementById('sop-obj').value : "Tiada info";
-        const contextPrompt = `Konteks Projek: ${projName}. Objektif: ${projObj}. Soalan: ${promptText}`;
+        const contextPrompt = `Projek: ${projName}. ${contextData}. Soalan: ${promptText}`;
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -194,6 +232,7 @@ if (!config) {
         }
     }
 
+    // LISTENER UI AUTOMATIK ZONES
     ['zone1', 'zone2', 'zone3', 'zone4'].forEach(zoneId => {
         onValue(ref(db, `zones/${zoneId}/status`), (snapshot) => {
             const statusText = snapshot.val();
