@@ -48,30 +48,12 @@
 </div>
 
 <div class="app-bottom-nav">
-    <button class="app-nav-item active" onclick="switchAppTab('form', this)">
+    <button class="app-nav-item active" onclick="window.switchAppTab('form', this)">
         <i class="fas fa-file-alt"></i>
         <span>Dokumen</span>
     </button>
-    <button class="app-nav-item" onclick="switchAppTab('chat', this)">
+    <button class="app-nav-item" onclick="window.switchAppTab('chat', this)">
         <i class="fas fa-comment-dots"></i>
         <span>Sembang</span>
     </button>
 </div>
-
-<script>
-    function switchAppTab(viewId, btnElement) {
-        // Buang class 'active' dari semua butang nav
-        document.querySelectorAll('.app-nav-item').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Buang class 'active' dari semua paparan (views)
-        document.querySelectorAll('.app-view').forEach(view => {
-            view.classList.remove('active');
-        });
-        
-        // Letak class 'active' pada yang dipilih
-        btnElement.classList.add('active');
-        document.getElementById(`view-${viewId}`).classList.add('active');
-    }
-</script>
