@@ -1,25 +1,48 @@
-<form id="sop-form" onsubmit="event.preventDefault();">
-    <div class="form-group">
-        <label>1. Nama Projek</label>
-        <input type="text" id="sop-name" placeholder="Cth: KetickPOS" required>
+<div class="war-room-dashboard">
+    <div class="form-panel">
+        <h3 style="margin-top:0; color:var(--text); font-size:1rem; border-bottom:1px solid #2a2b2c; padding-bottom:10px;">📄 Dokumen Projek</h3>
+        <form id="sop-form" onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label>1. Nama Projek</label>
+                <input type="text" id="sop-name" placeholder="Cth: KetickPOS" required>
+            </div>
+            <div class="form-group">
+                <label>2. Masalah / Objektif Utama</label>
+                <textarea id="sop-obj" rows="2" placeholder="Apa masalah yang sistem ini selesaikan?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>3. Pengguna Sasaran (Roles)</label>
+                <input type="text" id="sop-users" placeholder="Cth: Staf Kaunter, Admin Manager">
+            </div>
+            <div class="form-group">
+                <label>4. Sempadan Projek (Boundaries)</label>
+                <textarea id="sop-scope" rows="2" placeholder="Fungsi yang TIDAK AKAN dibuat dalam Versi 1.0"></textarea>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-save" onclick="window.saveIntakeData(false)">Simpan Draf</button>
+                <button type="button" class="btn-greenlight" onclick="window.saveIntakeData(true)">Greenlight (Aktif)</button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label>2. Masalah / Objektif Utama</label>
-        <textarea id="sop-obj" rows="3" placeholder="Apa masalah yang sistem ini selesaikan?"></textarea>
+
+    <div class="chat-panel">
+        <div class="chat-header">
+            <button class="chat-tab active-gemini" onclick="window.switchChatMode('gemini')"><i class="fas fa-robot"></i> Gemini AI</button>
+            <button class="chat-tab" onclick="window.switchChatMode('telegram')"><i class="fab fa-telegram"></i> Telegram</button>
+            <button class="chat-tab" onclick="window.switchChatMode('slack')"><i class="fab fa-slack"></i> Slack</button>
+        </div>
+        
+        <div class="chat-messages" id="chat-box">
+            <div class="msg-bubble msg-bot" id="welcome-msg">
+                Salam. Saya Gemini. Ada idea struktur nak bincang?
+            </div>
+            <div class="loading-dots" id="chat-loading">Gemini sedang menaip...</div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Tanya Gemini atau hantar ke team..." onkeypress="window.handleChatEnter(event)">
+            <button onclick="window.sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
-    <div class="form-group">
-        <label>3. Pengguna Sasaran (Roles)</label>
-        <input type="text" id="sop-users" placeholder="Cth: Staf Kaunter, Admin Manager">
-    </div>
-    <div class="form-group">
-        <label>4. Link Bilik Gerakan</label>
-        <input type="url" id="sop-room" placeholder="Link WhatsApp Group / Slack / Trello">
-    </div>
-    <div class="form-group">
-        <label>5. Sempadan Projek (Boundaries)</label>
-        <textarea id="sop-scope" rows="3" placeholder="Fungsi yang TIDAK AKAN dibuat dalam Versi 1.0"></textarea>
-    </div>
-    
-    <button type="button" class="btn-save" onclick="window.saveIntakeData(false)">Simpan Draf (Kekal Pending)</button>
-    <button type="button" class="btn-greenlight" onclick="window.saveIntakeData(true)">Berikan Greenlight (Mula Aktif)</button>
-</form>
+</div>
