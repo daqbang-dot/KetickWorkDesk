@@ -1,0 +1,37 @@
+<div id="view-schema" class="app-view active">
+    <h3 style="margin-top:0; color:var(--text); font-size:1.1rem; margin-bottom:10px;">🧠 Skema Data (JSON)</h3>
+    <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px; line-height: 1.4;">
+        Rangka struktur akar (root) pangkalan data Firebase. Pastikan struktur leper (flat) untuk carian pantas.
+    </p>
+    
+    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+        <textarea id="arch-json" style="flex-grow: 1; width:100%; background:#0a0a0a; color:#39ff14; font-family:monospace; padding:15px; border-radius:12px; border:1px solid #333; font-size: 0.85rem; outline: none; box-sizing: border-box;" placeholder='{\n  "merchants": {\n    "merchant_id_001": {\n      "settings": {},\n      "products": {},\n      "transactions": {}\n    }\n  }\n}'></textarea>
+    </div>
+    
+    <div style="display:flex; gap:10px; margin-top:20px; flex-shrink: 0;">
+        <button type="button" class="btn-save" onclick="window.saveArchData(false)">Simpan Draf</button>
+        <button type="button" class="btn-greenlight" onclick="window.saveArchData(true)">Sah (Lulus ke D)</button>
+    </div>
+</div>
+
+<div id="view-logic" class="app-view">
+    <h3 style="margin-top:0; color:var(--text); font-size:1.1rem; margin-bottom:10px;">⚙️ Pemetaan Logik (Flow)</h3>
+    <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px; line-height: 1.4;">
+        Catat aliran kerja utama (Create, Read, Update, Delete) dan proses automasi sistem.
+    </p>
+    
+    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+        <textarea id="arch-logic" style="flex-grow: 1; width:100%; background:#0f1011; color:var(--text); font-family:'Urbanist', sans-serif; padding:15px; border-radius:12px; border:1px solid #2a2b2c; font-size: 0.9rem; outline: none; box-sizing: border-box;" placeholder="Aliran Transaksi:\n1. User tambah produk ke dalam Cart.\n2. Tekan 'Confirm Receipt'.\n3. Sistem tolak stok (-1) dari senarai Products.\n4. Sistem jana 'billNo' baru (+1)."></textarea>
+    </div>
+</div>
+
+<div class="app-bottom-nav">
+    <button class="app-nav-item active" onclick="window.switchAppTab('schema', this)">
+        <i class="fas fa-database"></i>
+        <span>Skema Data</span>
+    </button>
+    <button class="app-nav-item" onclick="window.switchAppTab('logic', this)">
+        <i class="fas fa-project-diagram"></i>
+        <span>Logik Flow</span>
+    </button>
+</div>
