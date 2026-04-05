@@ -47,7 +47,32 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #ffaa00; /* Default pending color */
+            margin-bottom: 10px;
         }
+        
+        /* Gaya Butang Kawalan Admin */
+        .admin-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 5px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+        .admin-controls button {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .admin-controls button:hover {
+            border-color: var(--neon-blue);
+            background: #333;
+        }
+
         .ai-panel {
             margin-top: 40px;
             background: rgba(0, 242, 255, 0.1);
@@ -79,24 +104,48 @@
         <h3>🏗️ Zon Arsitektur</h3>
         <p>Data Model & Logic Mapping.</p>
         <div class="status">○ Connecting...</div>
+        <div class="admin-controls">
+            <button onclick="updateStatus('zone1', 'Pending')">P</button>
+            <button onclick="updateStatus('zone1', 'Active')">A</button>
+            <button onclick="updateStatus('zone1', 'Designing')">D</button>
+            <button onclick="updateStatus('zone1', 'Done')" style="color:var(--neon-green)">OK</button>
+        </div>
     </div>
 
     <div class="zone-card" id="zone2">
         <h3>📂 Zon Struktur Fail</h3>
         <p>HTML, CSS, JS Architecture.</p>
         <div class="status">○ Connecting...</div>
+        <div class="admin-controls">
+            <button onclick="updateStatus('zone2', 'Pending')">P</button>
+            <button onclick="updateStatus('zone2', 'Active')">A</button>
+            <button onclick="updateStatus('zone2', 'Designing')">D</button>
+            <button onclick="updateStatus('zone2', 'Done')" style="color:var(--neon-green)">OK</button>
+        </div>
     </div>
 
     <div class="zone-card" id="zone3">
         <h3>🌉 Zon Integrasi</h3>
         <p>GitHub & Firebase Connection.</p>
         <div class="status">○ Connecting...</div>
+        <div class="admin-controls">
+            <button onclick="updateStatus('zone3', 'Pending')">P</button>
+            <button onclick="updateStatus('zone3', 'Active')">A</button>
+            <button onclick="updateStatus('zone3', 'Designing')">D</button>
+            <button onclick="updateStatus('zone3', 'Done')" style="color:var(--neon-green)">OK</button>
+        </div>
     </div>
 
     <div class="zone-card" id="zone4">
         <h3>🚀 Zon Workflow</h3>
         <p>Sequence & Deployment.</p>
         <div class="status">○ Connecting...</div>
+        <div class="admin-controls">
+            <button onclick="updateStatus('zone4', 'Pending')">P</button>
+            <button onclick="updateStatus('zone4', 'Active')">A</button>
+            <button onclick="updateStatus('zone4', 'Designing')">D</button>
+            <button onclick="updateStatus('zone4', 'Done')" style="color:var(--neon-green)">OK</button>
+        </div>
     </div>
 </div>
 
@@ -136,7 +185,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     const config = JSON.parse(localStorage.getItem('ketick_firebase_config'));
 
@@ -153,7 +202,18 @@
             const app = initializeApp(firebaseConfig);
             const db = getDatabase(app);
             
-            document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Sedia untuk perbincangan.`;
+            // Fungsi Global supaya butang HTML boleh panggil
+            window.updateStatus = function(zoneId, newStatus) {
+                const statusRef = ref(db, `zones/${zoneId}/status`);
+                set(statusRef, newStatus)
+                    .then(() => {
+                        console.log(`Status ${zoneId} dikemaskini kepada ${newStatus}!`);
+                        document.getElementById('ai-suggestion').innerText = `Tindakan: ${zoneId} ditukar kepada ${newStatus}.`;
+                    })
+                    .catch((error) => alert("Ralat: " + error.message));
+            };
+
+            document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Admin Mode Active.`;
             console.log("Firebase Connected!");
 
             // Fungsi untuk kemaskini UI secara automatik dari path: zones/zoneID/status
