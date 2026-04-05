@@ -22,7 +22,6 @@ if (!config) {
         location.reload();
     }
 } else {
-    // --- INIT FIREBASE ---
     const firebaseConfig = {
         apiKey: config.apiKey,
         authDomain: `${config.projectId}.firebaseapp.com`,
@@ -49,7 +48,7 @@ if (!config) {
         document.getElementById('workspace-modal').style.display = 'flex';
         
         const contentArea = document.getElementById('workspace-content');
-        contentArea.innerHTML = '<p style="text-align:center; color: var(--accent);">Memuat turun modul UI...</p>';
+        contentArea.innerHTML = '<p style="text-align:center; color: var(--accent); padding: 20px;">Memuat turun modul UI...</p>';
 
         try {
             const response = await fetch(`zones/${folderName}/${phaseName}.html`);
@@ -57,17 +56,25 @@ if (!config) {
             const html = await response.text();
             contentArea.innerHTML = html;
 
-            // Jika fasa P, tarik data lama
             if (folderName === 'arsitektur' && phaseName === 'p') {
                 loadIntakeDraft(zoneId);
             }
         } catch (error) {
-            contentArea.innerHTML = `<p style="color:var(--red); text-align:center;">Ralat: Sila bina fail <b>zones/${folderName}/${phaseName}.html</b> dahulu.</p>`;
+            contentArea.innerHTML = `<p style="color:var(--red); text-align:center; padding: 20px;">Ralat: Sila bina fail <b>zones/${folderName}/${phaseName}.html</b> dahulu.</p>`;
         }
     };
 
     window.closeWorkspace = function() {
         document.getElementById('workspace-modal').style.display = 'none';
+    };
+
+    // --- LOGIK BOTTOM NAVIGATION TABS (BARU DITAMBAH) ---
+    window.switchAppTab = function(viewId, btnElement) {
+        document.querySelectorAll('.app-nav-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+        
+        btnElement.classList.add('active');
+        document.getElementById(`view-${viewId}`).classList.add('active');
     };
 
     async function loadIntakeDraft(zoneId) {
@@ -106,7 +113,6 @@ if (!config) {
         });
     };
 
-    // --- LOGIK CHAT & GEMINI API ---
     window.switchChatMode = function(mode) {
         window.currentChatMode = mode;
         const tabs = document.querySelectorAll('.chat-tab');
@@ -188,7 +194,6 @@ if (!config) {
         }
     }
 
-    // Listener Automatik UI Firebase
     ['zone1', 'zone2', 'zone3', 'zone4'].forEach(zoneId => {
         onValue(ref(db, `zones/${zoneId}/status`), (snapshot) => {
             const statusText = snapshot.val();
