@@ -81,6 +81,7 @@
             height: 50px;
             background-color: #555;
             z-index: 1;
+            transition: 0.3s;
         }
 
         /* Anak Panah (Arrowhead) */
@@ -93,6 +94,16 @@
             color: #555;
             font-size: 14px;
             z-index: 3;
+            transition: 0.3s;
+        }
+
+        /* Smart Flow: Warna garisan bila fasa sudah Done */
+        .node.path-done::after {
+            background-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+        .node.path-done::before {
+            color: var(--neon-green);
         }
 
         h3 { color: var(--neon-blue); margin-top: 0; margin-bottom: 5px; font-size: 1.1rem; }
@@ -143,7 +154,7 @@
             border: 1px solid var(--neon-blue);
             border-left: 5px solid var(--neon-blue);
             border-radius: 8px;
-            width: 80%; /* Dikecilkan sedikit untuk mobile */
+            width: 80%;
             max-width: 400px;
             text-align: center;
         }
@@ -289,16 +300,28 @@
                 onValue(statusRef, (snapshot) => {
                     const statusText = snapshot.val();
                     const cardElement = document.getElementById(zoneId);
+                    
                     if (cardElement && statusText) {
                         const statusDisplay = cardElement.querySelector('.status');
                         statusDisplay.innerText = `● ${statusText}`;
                         
-                        if(statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'done') {
+                        const statusLower = statusText.toLowerCase();
+                        
+                        // Logik Warna Kad & Smart Flow Garisan
+                        if(statusLower === 'active' || statusLower === 'done') {
                             statusDisplay.style.color = 'var(--neon-green)';
                             cardElement.style.borderColor = 'var(--neon-green)';
+                            
+                            // Tambah class 'path-done' jika siap untuk tukar garisan jadi hijau
+                            if(statusLower === 'done') {
+                                cardElement.classList.add('path-done');
+                            } else {
+                                cardElement.classList.remove('path-done');
+                            }
                         } else {
                             statusDisplay.style.color = '#ffaa00';
                             cardElement.style.borderColor = '#333';
+                            cardElement.classList.remove('path-done');
                         }
                     }
                 });
