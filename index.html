@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KETICK WorkDesk | Command Center</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #161616;
+            --neon-blue: #00f2ff;
+            --neon-green: #39ff14;
+            --text: #e0e0e0;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            border-bottom: 2px solid var(--neon-blue);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .grid-container {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+        .zone-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-left: 5px solid var(--neon-blue);
+            padding: 20px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .zone-card:hover {
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+        h3 { color: var(--neon-blue); margin-top: 0; }
+        .status {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--neon-green);
+        }
+        .ai-panel {
+            margin-top: 40px;
+            background: rgba(0, 242, 255, 0.1);
+            padding: 20px;
+            border: 1px dashed var(--neon-blue);
+            border-radius: 10px;
+        }
+        button#reset-btn {
+            background: none;
+            border: 1px solid #444;
+            color: #666;
+            font-size: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>KETICK WorkDesk v1.0</h1>
+    <p>Project Workflow & Logic Hub</p>
+</header>
+
+<div class="grid-container">
+    <div class="zone-card">
+        <h3>🏗️ Zon Arsitektur</h3>
+        <p>Data Model & Logic Mapping.</p>
+        <div class="status">● Active</div>
+    </div>
+
+    <div class="zone-card">
+        <h3>📂 Zon Struktur Fail</h3>
+        <p>HTML, CSS, JS Architecture.</p>
+        <div class="status">● Designing</div>
+    </div>
+
+    <div class="zone-card">
+        <h3>🌉 Zon Integrasi</h3>
+        <p>GitHub & Firebase Connection.</p>
+        <div class="status" style="color: #ffaa00;">○ Pending</div>
+    </div>
+
+    <div class="zone-card">
+        <h3>🚀 Zon Workflow</h3>
+        <p>Sequence & Deployment.</p>
+        <div class="status" style="color: #ffaa00;">○ Pending</div>
+    </div>
+</div>
+
+<div class="ai-panel">
+    <h3>🤖 AI Technical Consultant (Ditepi)</h3>
+    <p id="ai-suggestion">"Sedia membantu. Panggil saya jika ada ralat atau perlukan pandangan teknikal."</p>
+</div>
+
+<button id="reset-btn" onclick="resetConfig()">Reset Local Config</button>
+
+<script>
+    // 1. Fungsi untuk ambil config dari Local Storage (Hanya di Telefon Anda)
+    function getLocalConfig() {
+        const savedConfig = localStorage.getItem('ketick_firebase_config');
+        return savedConfig ? JSON.parse(savedConfig) : null;
+    }
+
+    // 2. Jika tiada config, minta user masukkan
+    function setupWorkDesk() {
+        const config = getLocalConfig();
+        
+        if (!config) {
+            const apiKey = prompt("SISTEM: Masukkan Firebase API Key anda (Hanya disimpan secara lokal di telefon ini):");
+            if (apiKey) {
+                const newConfig = { 
+                    apiKey: apiKey, 
+                    projectId: "ketick-workdesk" 
+                };
+                localStorage.setItem('ketick_firebase_config', JSON.stringify(newConfig));
+                alert("SUCCESS: Config disimpan secara selamat di Local Storage!");
+                location.reload();
+            }
+        } else {
+            console.log("KETICKWorkDesk Active: Menggunakan Local Secure Key.");
+            document.getElementById('ai-suggestion').innerText = "System Live. Config dikesan secara lokal. Sedia untuk integrasi Firebase.";
+            // Panggil initializeFirebase(config) di sini selepas SDK dimasukkan
+        }
+    }
+
+    // 3. Fungsi Reset jika ingin tukar API Key
+    function resetConfig() {
+        if(confirm("Padam config lokal?")) {
+            localStorage.removeItem('ketick_firebase_config');
+            location.reload();
+        }
+    }
+
+    window.onload = setupWorkDesk;
+</script>
+
+</body>
+</html>
