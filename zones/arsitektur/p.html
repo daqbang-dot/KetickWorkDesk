@@ -1,52 +1,5 @@
-<style>
-    /* CSS Khas untuk Mobile War Room */
-    .wr-tabs {
-        display: flex; gap: 5px; background: #0f1011; padding: 6px; border-radius: 12px;
-        border: 1px solid #2a2b2c; margin-bottom: 20px;
-    }
-    .wr-tab-btn {
-        flex: 1; padding: 12px; background: transparent; border: none; border-radius: 8px;
-        color: var(--text-dim); font-family: 'Urbanist', sans-serif; font-weight: bold;
-        font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .wr-tab-btn.active { background: #2a2b2c; color: var(--accent); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    
-    .wr-view { display: none; animation: fadeIn 0.3s ease; }
-    .wr-view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* Chat Panel Styles */
-    .chat-panel { display: flex; flex-direction: column; height: 60vh; background: rgba(0, 0, 0, 0.2); border: 1px solid #2a2b2c; border-radius: 12px; padding: 15px; }
-    .chat-header { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #2a2b2c; padding-bottom: 10px; overflow-x: auto; }
-    .chat-header::-webkit-scrollbar { display: none; }
-    .chat-tab { background: none; border: none; color: var(--text-dim); font-family: 'Urbanist', sans-serif; font-weight: bold; font-size: 0.75rem; cursor: pointer; padding: 8px 12px; border-radius: 6px; transition: 0.2s; white-space: nowrap; }
-    .chat-tab.active-gemini { background: var(--accent-dim); color: var(--accent); }
-    .chat-tab.active-telegram { background: rgba(0, 136, 204, 0.1); color: #0088cc; }
-    .chat-tab.active-slack { background: rgba(224, 30, 90, 0.1); color: #e01e5a; }
-
-    .chat-messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; margin-bottom: 15px; }
-    .chat-messages::-webkit-scrollbar { width: 3px; } .chat-messages::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; }
-    .msg-bubble { max-width: 85%; padding: 12px 15px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
-    .msg-user { background: #2a2b2c; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
-    .msg-bot { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; }
-    
-    .chat-input-area { display: flex; gap: 10px; }
-    .chat-input-area input { flex-grow: 1; background: #0f1011; border: 1px solid #2a2b2c; color: #fff; padding: 12px 15px; border-radius: 20px; font-family: 'Urbanist', sans-serif; outline: none; font-size: 0.9rem;}
-    .chat-input-area input:focus { border-color: var(--accent); }
-    .chat-input-area button { background: var(--accent); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
-    .loading-dots { display: none; color: var(--accent); font-size: 0.8rem; font-style: italic; align-self: flex-start; margin-left: 5px; }
-</style>
-
-<div class="wr-tabs">
-    <button class="wr-tab-btn active" onclick="window.switchMainTab('form')">
-        <i class="fas fa-file-alt"></i> Dokumen
-    </button>
-    <button class="wr-tab-btn" onclick="window.switchMainTab('chat')">
-        <i class="fas fa-robot"></i> Komunikasi
-    </button>
-</div>
-
-<div id="view-form" class="wr-view active">
+<div id="view-form" class="app-view active">
+    <h3 style="margin-top:0; color:var(--text); font-size:1.1rem; margin-bottom:20px;">📄 Dokumen Projek</h3>
     <form id="sop-form" onsubmit="event.preventDefault();">
         <div class="form-group">
             <label>1. Nama Projek</label>
@@ -54,7 +7,7 @@
         </div>
         <div class="form-group">
             <label>2. Masalah / Objektif Utama</label>
-            <textarea id="sop-obj" rows="2" placeholder="Apa masalah yang sistem ini selesaikan?"></textarea>
+            <textarea id="sop-obj" rows="3" placeholder="Apa masalah yang sistem ini selesaikan?"></textarea>
         </div>
         <div class="form-group">
             <label>3. Pengguna Sasaran (Roles)</label>
@@ -62,19 +15,19 @@
         </div>
         <div class="form-group">
             <label>4. Sempadan Projek (Boundaries)</label>
-            <textarea id="sop-scope" rows="2" placeholder="Fungsi yang TIDAK AKAN dibuat dalam Versi 1.0"></textarea>
+            <textarea id="sop-scope" rows="3" placeholder="Fungsi yang TIDAK AKAN dibuat dalam Versi 1.0"></textarea>
         </div>
         
-        <div style="display:flex; gap:10px; margin-top:20px;">
+        <div style="display:flex; gap:10px; margin-top:30px;">
             <button type="button" class="btn-save" onclick="window.saveIntakeData(false)">Simpan Draf</button>
             <button type="button" class="btn-greenlight" onclick="window.saveIntakeData(true)">Greenlight (Aktif)</button>
         </div>
     </form>
 </div>
 
-<div id="view-chat" class="wr-view">
-    <div class="chat-panel">
-        <div class="chat-header">
+<div id="view-chat" class="app-view">
+    <div class="mobile-chat-container">
+        <div class="mobile-chat-header">
             <button class="chat-tab active-gemini" onclick="window.switchChatMode('gemini')"><i class="fas fa-robot"></i> Gemini AI</button>
             <button class="chat-tab" onclick="window.switchChatMode('telegram')"><i class="fab fa-telegram"></i> Telegram</button>
             <button class="chat-tab" onclick="window.switchChatMode('slack')"><i class="fab fa-slack"></i> Slack</button>
@@ -84,7 +37,7 @@
             <div class="msg-bubble msg-bot" id="welcome-msg">
                 Salam, Arkitek KTD. Saya Gemini. Ada nak bincang fasal logik struktur data projek ni?
             </div>
-            <div class="loading-dots" id="chat-loading">Menaip...</div>
+            <div class="loading-dots" id="chat-loading">Gemini sedang menaip...</div>
         </div>
 
         <div class="chat-input-area">
@@ -94,16 +47,31 @@
     </div>
 </div>
 
+<div class="app-bottom-nav">
+    <button class="app-nav-item active" onclick="switchAppTab('form', this)">
+        <i class="fas fa-file-alt"></i>
+        <span>Dokumen</span>
+    </button>
+    <button class="app-nav-item" onclick="switchAppTab('chat', this)">
+        <i class="fas fa-comment-dots"></i>
+        <span>Sembang</span>
+    </button>
+</div>
+
 <script>
-    // Logik untuk tukar antara Form dan Chat dalam War Room
-    window.switchMainTab = function(tabId) {
-        // Reset Buttons
-        document.querySelectorAll('.wr-tab-btn').forEach(btn => btn.classList.remove('active'));
-        // Hide All Views
-        document.querySelectorAll('.wr-view').forEach(view => view.classList.remove('active'));
+    function switchAppTab(viewId, btnElement) {
+        // Buang class 'active' dari semua butang nav
+        document.querySelectorAll('.app-nav-item').forEach(btn => {
+            btn.classList.remove('active');
+        });
         
-        // Activate selected
-        event.currentTarget.classList.add('active');
-        document.getElementById(`view-${tabId}`).classList.add('active');
+        // Buang class 'active' dari semua paparan (views)
+        document.querySelectorAll('.app-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Letak class 'active' pada yang dipilih
+        btnElement.classList.add('active');
+        document.getElementById(`view-${viewId}`).classList.add('active');
     }
 </script>
