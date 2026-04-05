@@ -46,7 +46,7 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--neon-green);
+            color: #ffaa00; /* Default pending color */
         }
         .ai-panel {
             margin-top: 40px;
@@ -78,25 +78,25 @@
     <div class="zone-card" id="zone1">
         <h3>🏗️ Zon Arsitektur</h3>
         <p>Data Model & Logic Mapping.</p>
-        <div class="status">● Active</div>
+        <div class="status">○ Connecting...</div>
     </div>
 
     <div class="zone-card" id="zone2">
         <h3>📂 Zon Struktur Fail</h3>
         <p>HTML, CSS, JS Architecture.</p>
-        <div class="status">● Designing</div>
+        <div class="status">○ Connecting...</div>
     </div>
 
     <div class="zone-card" id="zone3">
         <h3>🌉 Zon Integrasi</h3>
         <p>GitHub & Firebase Connection.</p>
-        <div class="status" style="color: #ffaa00;">○ Pending</div>
+        <div class="status">○ Connecting...</div>
     </div>
 
     <div class="zone-card" id="zone4">
         <h3>🚀 Zon Workflow</h3>
         <p>Sequence & Deployment.</p>
-        <div class="status" style="color: #ffaa00;">○ Pending</div>
+        <div class="status">○ Connecting...</div>
     </div>
 </div>
 
@@ -141,11 +141,10 @@
     const config = JSON.parse(localStorage.getItem('ketick_firebase_config'));
 
     if (config) {
-        // Bina config secara dinamik supaya tiada Project ID dalam GitHub
         const firebaseConfig = {
             apiKey: config.apiKey,
             authDomain: `${config.projectId}.firebaseapp.com`,
-            databaseURL: `https://${config.projectId}-default-rtdb.firebaseio.com`,
+            databaseURL: `https://${config.projectId}-default-rtdb.asia-southeast1.firebasedatabase.app`,
             projectId: config.projectId,
             storageBucket: `${config.projectId}.appspot.com`,
         };
@@ -157,9 +156,28 @@
             document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Sedia untuk perbincangan.`;
             console.log("Firebase Connected!");
 
-            // Contoh: Pantau status dari database secara Realtime (Zon 3)
-            // const statusRef = ref(db, 'zones/zone3/status');
-            // onValue(statusRef, (snapshot) => { /* Update UI */ });
+            // Fungsi untuk kemaskini UI secara automatik dari path: zones/zoneID/status
+            function listenToZone(zoneId) {
+                const statusRef = ref(db, `zones/${zoneId}/status`);
+                onValue(statusRef, (snapshot) => {
+                    const statusText = snapshot.val();
+                    const cardElement = document.getElementById(zoneId);
+                    if (cardElement && statusText) {
+                        const statusDisplay = cardElement.querySelector('.status');
+                        statusDisplay.innerText = `● ${statusText}`;
+                        
+                        // Tukar warna mengikut status
+                        if(statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'done') {
+                            statusDisplay.style.color = 'var(--neon-green)';
+                        } else {
+                            statusDisplay.style.color = '#ffaa00';
+                        }
+                    }
+                });
+            }
+
+            // Jalankan pendengar untuk semua zon
+            ['zone1', 'zone2', 'zone3', 'zone4'].forEach(listenToZone);
 
         } catch (error) {
             document.getElementById('ai-suggestion').innerText = "Ralat Integrasi: Sila semak API Key & Project ID anda.";
