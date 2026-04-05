@@ -1,459 +1,289 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KETICK WorkDesk | Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KetickPOS</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4D30FF">
+    <link rel="apple-touch-icon" href="icon-001.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         :root {
-            --bg: #0f1011;
-            --sidebar-bg: #131415;
-            --card-bg: #1c1d1e;
-            --accent: #4d2fff; /* Canggih Biru Tua/Ungu dari image_10.png */
-            --accent-dim: rgba(77, 47, 255, 0.1);
-            --text: #d1d5db;
-            --text-dim: #888;
-            --green: #10b981; /* Canggih Emerald Green (less neon) */
-            --blue: #3b82f6;
-            --yellow: #f59e0b;
-            --red: #ef4444;
+            --bg-main: #020107;
+            --card-bg: rgba(77, 48, 255, 0.05);
+            --accent: #CB7CFD;
+            --accent-gradient: linear-gradient(135deg, #4D30FF 0%, #CB7CFD 100%);
+            --text-main: #FFFFFF;
+            --text-muted: #94a3b8;
+            --border-color: rgba(203, 124, 253, 0.1);
+            --input-bg: #0f0e17;
         }
+
+        :root.light-mode {
+            --bg-main: #FFFFFF;
+            --card-bg: rgba(255, 83, 0, 0.05);
+            --accent: #FF5300;
+            --accent-gradient: linear-gradient(135deg, #1B0B03 0%, #FF5300 100%);
+            --text-main: #130600;
+            --text-muted: #64748b;
+            --border-color: rgba(255, 83, 0, 0.2);
+            --input-bg: #f8fafc;
+        }
+
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Urbanist', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100vw;
+            max-width: 100%;
         }
-        /* Sidebar Layout */
-        .sidebar {
-            width: 70px;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid #2a2b2c;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-        }
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 40px;
-        }
-        .logo span { color: var(--accent); }
-        .sidebar nav {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            flex-grow: 1;
-        }
-        .nav-item {
-            color: #555;
-            font-size: 1.2rem;
-            cursor: pointer;
-            position: relative;
-        }
-        .nav-item.active {
-            color: var(--accent);
-        }
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            left: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 100%;
-            background-color: var(--accent);
-            border-radius: 0 4px 4px 0;
-        }
-        .sidebar-footer {
-            color: #555;
-        }
-        /* Main Content Layout */
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #1a1b1c; /* Sedikit cerah untuk kanvas flowchart */
-        }
-        header.top-header {
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid #2a2b2c;
-            padding: 10px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-header .search-bar {
-            background-color: #2a2b2c;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 300px;
-        }
-        .top-header .search-bar input {
-            background: none;
-            border: none;
-            color: var(--text);
-            flex-grow: 1;
-        }
-        .top-header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .main-area {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .main-area-header {
-            margin-bottom: 30px;
-        }
-        .main-area-header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-        .main-area-header .project-selector {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
-        /* Flowchart CSS */
-        .flowchart-canvas {
-            flex-grow: 1;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 60px; /* Jarak antara nod Integromat */
-        }
-        .node {
-            background-color: var(--card-bg);
-            border: 1px solid #2a2b2c;
-            border-radius: 20px;
-            padding: 20px;
-            width: 90%;
-            max-width: 350px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            transition: 0.3s;
-        }
-        .node:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-dim);
-        }
-        /* Garisan Penyambung Integromat */
-        .node:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            bottom: -62px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 60px;
-            background-color: #555; /* Default dim gray */
-            z-index: 1;
-            transition: 0.3s;
-        }
-        .node:not(:last-child)::before {
-            content: '▼';
-            position: absolute;
-            bottom: -70px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #555;
-            font-size: 14px;
-            z-index: 3;
-            transition: 0.3s;
-        }
-        /* Garisan DONE */
-        .node.path-done::after {
-            background-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-dim);
-        }
-        .node.path-done::before {
-            color: var(--accent);
-        }
-        .node h3 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-        .node h3 i { margin-right: 10px; color: var(--accent); }
-        .node p {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            margin: 5px 0 15px 0;
-        }
-        .node .status {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            color: var(--accent); /* Default Pending/Done dim gray */
-            background-color: var(--accent-dim);
-            padding: 3px 10px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-        /* Butang Kawalan Admin dalam Nod */
-        .admin-controls {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            border-top: 1px dashed #2a2b2c;
-            padding-top: 15px;
-        }
-        .admin-controls button {
-            background-color: #2a2b2c;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .admin-controls button:hover {
-            border-color: var(--accent);
-            background-color: #333;
-        }
-        /* Warna Aksen Nod Individu */
-        .node#zone1 h3 i { color: var(--blue); }
-        .node#zone2 h3 i { color: var(--yellow); }
-        .node#zone3 h3 i { color: var(--accent); }
-        .node#zone4 h3 i { color: var(--red); }
 
-        .ai-panel {
-            margin-top: 40px;
-            background-color: var(--sidebar-bg);
-            padding: 15px 25px;
-            border: 1px solid var(--accent);
-            border-left: 5px solid var(--accent);
-            border-radius: 8px;
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            width: 100%;
         }
-        .ai-panel h3 { color: var(--text); font-size: 1rem; margin-top: 0; }
-        .ai-panel p { margin: 0; font-size: 0.85rem; color: var(--text-dim); }
 
-        button#reset-btn {
-            background: none;
-            border: 1px solid #444;
-            color: #666;
-            font-size: 10px;
-            margin-top: 30px;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 20px;
+        .gradient-text {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        button#reset-btn:hover { background: #222; color: #fff; }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white !important;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.95); opacity: 0.8; }
+
+        input, textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            outline: none;
+            width: 100%;
+            -webkit-appearance: none;
+        }
+        
+        .text-accent { color: var(--accent); }
+        .tab-btn { color: var(--text-muted); }
+        .active-tab { 
+            background: var(--accent-gradient); 
+            color: white !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .hidden { display: none !important; }
     </style>
-</head>
-<body>
-    <aside class="sidebar">
-        <div class="logo"><span>K</span>TD</div>
-        <nav>
-            <div class="nav-item active"><i class="fas fa-desktop"></i></div>
-            <div class="nav-item"><i class="fas fa-folder-tree"></i></div>
-            <div class="nav-item"><i class="fas fa-plug"></i></div>
-            <div class="nav-item"><i class="fas fa-robot"></i></div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="nav-item"><i class="fas fa-cog"></i></div>
-        </div>
-    </aside>
-    <main class="main-content">
-        <header class="top-header">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari dalam KTD WorkDesk...">
-            </div>
-            <div class="user-info">
-                <i class="fas fa-bell"></i>
-                <i class="fas fa-user-circle"></i>
-            </div>
-        </header>
-        <div class="main-area">
-            <div class="main-area-header">
-                <span class="project-selector">Projek: KetickHub</span>
-                <h1>Flow WorkDesk</h1>
-            </div>
-            <div class="flowchart-canvas">
-                <div class="node" id="zone1">
-                    <h3><i class="fas fa-archway"></i>Arsitektur</h3>
-                    <p>Data Model & Logic Mapping.</p>
-                    <div class="status">○ Connecting...</div>
-                    <div class="admin-controls">
-                        <button onclick="updateStatus('zone1', 'Pending')">P</button>
-                        <button onclick="updateStatus('zone1', 'Active')">A</button>
-                        <button onclick="updateStatus('zone1', 'Designing')">D</button>
-                        <button onclick="updateStatus('zone1', 'Done')" style="color:var(--green)">OK</button>
-                    </div>
-                </div>
-                <div class="node" id="zone2">
-                    <h3><i class="fas fa-folder-open"></i>Struktur Fail</h3>
-                    <p>HTML, CSS, JS Architecture.</p>
-                    <div class="status">○ Connecting...</div>
-                    <div class="admin-controls">
-                        <button onclick="updateStatus('zone2', 'Pending')">P</button>
-                        <button onclick="updateStatus('zone2', 'Active')">A</button>
-                        <button onclick="updateStatus('zone2', 'Designing')">D</button>
-                        <button onclick="updateStatus('zone2', 'Done')" style="color:var(--green)">OK</button>
-                    </div>
-                </div>
-                <div class="node" id="zone3">
-                    <h3><i class="fas fa-bridge"></i>Integrasi</h3>
-                    <p>GitHub & Firebase Connection.</p>
-                    <div class="status">○ Connecting...</div>
-                    <div class="admin-controls">
-                        <button onclick="updateStatus('zone3', 'Pending')">P</button>
-                        <button onclick="updateStatus('zone3', 'Active')">A</button>
-                        <button onclick="updateStatus('zone3', 'Designing')">D</button>
-                        <button onclick="updateStatus('zone3', 'Done')" style="color:var(--green)">OK</button>
-                    </div>
-                </div>
-                <div class="node" id="zone4">
-                    <h3><i class="fas fa-paper-plane"></i>Workflow</h3>
-                    <p>Sequence & Deployment.</p>
-                    <div class="status">○ Connecting...</div>
-                    <div class="admin-controls">
-                        <button onclick="updateStatus('zone4', 'Pending')">P</button>
-                        <button onclick="updateStatus('zone4', 'Active')">A</button>
-                        <button onclick="updateStatus('zone4', 'Designing')">D</button>
-                        <button onclick="updateStatus('zone4', 'Done')" style="color:var(--green)">OK</button>
-                    </div>
-                </div>
-            </div>
-            <div class="ai-panel">
-                <h3>🤖 AI Consultant (Ditepi)</h3>
-                <p id="ai-suggestion">Membasuh enjin sistem...</p>
-            </div>
-            <button id="reset-btn" onclick="resetConfig()">Reset Local Config</button>
-        </div>
-    </main>
 
     <script>
-        function getLocalConfig() {
-            const savedConfig = localStorage.getItem('ketick_firebase_config');
-            return savedConfig ? JSON.parse(savedConfig) : null;
-        }
-
-        function resetConfig() {
-            if(confirm("Padam config lokal?")) {
-                localStorage.removeItem('ketick_firebase_config');
-                location.reload();
-            }
-        }
-
-        // Prompt user jika config tiada
-        const currentConfig = getLocalConfig();
-        if (!currentConfig) {
-            const apiKey = prompt("SISTEM: Masukkan Firebase API Key Anda:");
-            const projectId = prompt("SISTEM: Masukkan Firebase Project ID Anda:");
-            
-            if (apiKey && projectId) {
-                const newConfig = { apiKey, projectId };
-                localStorage.setItem('ketick_firebase_config', JSON.stringify(newConfig));
-                location.reload();
-            }
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
+            });
         }
     </script>
+</head>
+<body class="p-4 mx-auto max-w-lg"> 
+    
+    <header class="flex justify-between items-center mb-6 pt-2">
+        <div>
+            <h1 class="text-2xl font-bold gradient-text text-accent">KETICK4MICRO</h1>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="openPricing()" class="glass-card p-3 shadow-lg flex items-center justify-center text-yellow-400 border-yellow-400/50 hover:bg-yellow-400/10 transition">
+                <span>👑</span>
+            </button>
+            <button onclick="toggleTheme()" class="glass-card p-3 shadow-lg flex items-center justify-center">
+                <span id="theme-icon">🌙</span>
+            </button>
+            <button onclick="openSettings()" class="glass-card p-3 shadow-lg flex items-center justify-center">
+                <span>⚙️</span>
+            </button>
+        </div>
+    </header>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    <nav class="flex gap-2 mb-6 bg-white/5 p-1 rounded-2xl glass-card">
+        <button onclick="switchTab('tab-catalog')" class="tab-btn flex-1 py-3 rounded-xl font-bold text-xs transition active-tab" id="btn-catalog">Catalog</button>
+        <button onclick="switchTab('tab-pos')" class="tab-btn flex-1 py-3 rounded-xl font-bold text-xs transition" id="btn-pos">POS & Bill</button>
+        <button onclick="switchTab('tab-inventory')" class="tab-btn flex-1 py-3 rounded-xl font-bold text-xs transition" id="btn-inventory">Inventory</button>
+    </nav>
 
-        const config = JSON.parse(localStorage.getItem('ketick_firebase_config'));
+    <div id="pricing-page" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[200] hidden overflow-y-auto p-4 pt-10">
+        <div class="max-w-md mx-auto w-full pb-20">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-accent">Tingkatkan Bisnes Anda</h2>
+                    <p class="text-xs opacity-70 mt-1">Pilih pakej yang sesuai dengan keperluan anda.</p>
+                </div>
+                <button onclick="closePricing()" class="text-2xl bg-white/10 w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center">✕</button>
+            </div>
 
-        if (config) {
-            const firebaseConfig = {
-                apiKey: config.apiKey,
-                authDomain: `${config.projectId}.firebaseapp.com`,
-                databaseURL: `https://${config.projectId}-default-rtdb.asia-southeast1.firebasedatabase.app`,
-                projectId: config.projectId,
-                storageBucket: `${config.projectId}.appspot.com`,
-            };
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                const db = getDatabase(app);
+            <div class="space-y-4">
                 
-                // Fungsi Global supaya butang HTML boleh panggil
-                window.updateStatus = function(zoneId, newStatus) {
-                    const statusRef = ref(db, `zones/${zoneId}/status`);
-                    set(statusRef, newStatus)
-                        .then(() => {
-                            console.log(`Status ${zoneId} dikemaskini kepada ${newStatus}!`);
-                            document.getElementById('ai-suggestion').innerText = `Tindakan: ${zoneId} ditukar kepada ${newStatus}.`;
-                        })
-                        .catch((error) => alert("Ralat: " + error.message));
-                };
+                <div class="glass-card p-5 relative border-white/10 opacity-70">
+                    <h3 class="text-lg font-bold">Basic (Percuma)</h3>
+                    <p class="text-2xl font-bold text-accent my-2">RM 0</p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li>✔️ Had 50 Produk</li>
+                        <li>✔️ Local Storage Data</li>
+                        <li>✔️ Jana Quotation / Invoice</li>
+                        <li class="opacity-50">❌ Tiada Logo Syarikat (Teks shj)</li>
+                        <li class="opacity-50">❌ Watermark KETICK di PDF</li>
+                    </ul>
+                    <button disabled class="w-full bg-white/5 py-3 rounded-xl font-bold text-xs cursor-not-allowed">Pelan Semasa Anda</button>
+                </div>
 
-                document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Admin Mode Active.`;
-                console.log("Firebase Connected!");
+                <div class="glass-card p-5 relative border-accent/30 shadow-[0_0_15px_rgba(203,124,253,0.1)]">
+                    <h3 class="text-lg font-bold">Pro (Bulanan)</h3>
+                    <p class="text-2xl font-bold text-accent my-2">RM 29<span class="text-xs opacity-50 font-normal"> /bulan</span></p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li>✔️ <b>Unlimited</b> Produk</li>
+                        <li>✔️ <b>Cloud Backup</b> (Data Selamat)</li>
+                        <li>✔️ Muat naik <b>Logo Bisnes</b></li>
+                        <li>✔️ Buang Watermark KETICK</li>
+                        <li>✔️ Laporan Jualan Asas</li>
+                    </ul>
+                    <button onclick="subscribe('PRO')" class="w-full border border-accent text-accent hover:bg-accent hover:text-white py-3 rounded-xl font-bold text-xs transition">Langgan Pro</button>
+                </div>
 
-                // Fungsi untuk kemaskini UI secara automatik dari path: zones/zoneID/status
-                function listenToZone(zoneId) {
-                    const statusRef = ref(db, `zones/${zoneId}/status`);
-                    onValue(statusRef, (snapshot) => {
-                        const statusText = snapshot.val();
-                        const cardElement = document.getElementById(zoneId);
-                        if (cardElement && statusText) {
-                            const statusDisplay = cardElement.querySelector('.status');
-                            statusDisplay.innerText = `● ${statusText}`;
-                            
-                            const statusLower = statusText.toLowerCase();
+                <div class="glass-card p-5 relative border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)]">
+                    <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">JIMAT 42%</div>
+                    <h3 class="text-lg font-bold">Premium (Tahunan)</h3>
+                    <p class="text-2xl font-bold text-blue-400 my-2">RM 199<span class="text-xs opacity-50 font-normal"> /tahun</span></p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li>✔️ <b>Semua fungsi Pakej Pro</b></li>
+                        <li>✔️ <b>Multi-Device Sync</b> (Buka di PC/Tab)</li>
+                        <li>✔️ <b>1 Akaun Staf</b> (Untuk pekerja)</li>
+                        <li>✔️ Sokongan Bantuan VIP</li>
+                    </ul>
+                    <button onclick="subscribe('PREMIUM')" class="w-full border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white py-3 rounded-xl font-bold text-xs transition">Langgan Premium</button>
+                </div>
 
-                            // Tukar warna mengikut status, menggunakan palet canggih baharu
-                            if(statusLower === 'active' || statusLower === 'done') {
-                                statusDisplay.style.color = 'var(--green)'; // Canggih Emerald Green
-                                statusDisplay.style.backgroundColor = 'rgba(16, 185, 129, 0.1)'; // Dim Green BG
-                                cardElement.style.borderColor = 'var(--accent)'; // Warna aksen canggih
-                                
-                                // Tambah class 'path-done' jika siap untuk tukar garisan jadi canggih biru tua
-                                if(statusLower === 'done') {
-                                    cardElement.classList.add('path-done');
-                                } else {
-                                    cardElement.classList.remove('path-done');
-                                }
-                            } else {
-                                statusDisplay.style.color = '#ffaa00'; // Default pending color
-                                statusDisplay.style.backgroundColor = 'rgba(255, 170, 0, 0.1)'; // Dim Yellow BG
-                                cardElement.style.borderColor = '#333';
-                                cardElement.classList.remove('path-done');
-                            }
-                        }
-                    });
-                }
+                <div class="glass-card p-5 relative border-yellow-400/80 shadow-[0_0_25px_rgba(250,204,21,0.2)]">
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl tracking-widest uppercase">Paling Laris</div>
+                    <h3 class="text-lg font-bold text-yellow-400">Legend (Lifetime)</h3>
+                    <p class="text-2xl font-bold text-yellow-400 my-2">RM 499<span class="text-xs opacity-50 font-normal text-white"> bayar sekali</span></p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li>✔️ <b>Semua fungsi Premium</b></li>
+                        <li>✔️ <b>Tiada yuran bulanan / tahunan</b></li>
+                        <li>✔️ Butang hantar PDF terus ke WhatsApp</li>
+                        <li>✔️ Percuma modul & update akan datang</li>
+                    </ul>
+                    <button onclick="subscribe('LEGEND')" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-300 text-black py-4 rounded-xl font-bold text-sm shadow-xl transition active:scale-95">DAPATKAN LIFETIME SEKARANG</button>
+                </div>
 
-                // Jalankan pendengar untuk semua zon
-                ['zone1', 'zone2', 'zone3', 'zone4'].forEach(listenToZone);
+                <div class="h-10"></div>
+            </div>
+        </div>
+    </div>
 
-            } catch (error) {
-                document.getElementById('ai-suggestion').innerText = "Ralat Integrasi: Sila semak API Key & Project ID anda.";
-                console.error(error);
-            }
-        }
-    </script>
+    <div id="settings-page" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] hidden overflow-y-auto p-4 pt-10">
+        <div class="max-w-md mx-auto w-full pb-20">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-accent">Business Settings</h2>
+                <button onclick="closeSettings()" class="text-2xl bg-white/10 w-10 h-10 rounded-full">✕</button>
+            </div>
+            <div class="space-y-4">
+                <div class="glass-card p-4 border-dashed border-2 border-accent/20 text-center">
+                    <p class="text-[10px] mb-3 opacity-60 uppercase tracking-widest">Company Logo</p>
+                    <div class="mb-3 flex justify-center">
+                        <img id="logo-preview" src="https://via.placeholder.com/100" class="h-16 w-auto object-contain bg-white/10 p-2 rounded">
+                    </div>
+                    <input type="file" id="biz-logo" onchange="previewLogo(this)" class="hidden">
+                    <label for="biz-logo" class="btn-primary px-6 py-2 rounded-xl text-xs font-bold cursor-pointer inline-block">Pick Image</label>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <input type="text" id="biz-name" placeholder="Business Name" class="p-3 text-sm rounded-xl">
+                    <textarea id="biz-address" placeholder="Business Address" class="p-3 text-sm rounded-xl h-20"></textarea>
+                    <input type="text" id="biz-phone" placeholder="Phone Number" class="p-3 text-sm rounded-xl">
+                </div>
+                <div class="glass-card p-4">
+                    <h3 class="text-[10px] font-bold mb-3 opacity-70 uppercase tracking-widest">Payment Information</h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <input type="text" id="biz-bank" placeholder="Bank Name (e.g. Maybank)" class="p-3 text-sm rounded-xl">
+                        <input type="text" id="biz-acc-no" placeholder="Account Number" class="p-3 text-sm rounded-xl">
+                        <input type="text" id="biz-acc-name" placeholder="Account Holder Name" class="p-3 text-sm rounded-xl">
+                    </div>
+                </div>
+                
+                <button onclick="saveSettings()" class="w-full btn-primary py-4 rounded-xl font-bold shadow-xl mt-4">SAVE SETTINGS</button>
+                
+                <button id="install-button" class="w-full bg-white/10 py-4 rounded-xl font-bold border border-white/20 hidden mt-2">
+                    📥 INSTALL APP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-catalog" class="tab-content">
+        <div class="mb-4">
+            <input type="text" onkeyup="renderCatalog(this.value)" placeholder="Search product..." class="p-4 rounded-xl glass-card border-none text-sm">
+        </div>
+        <div id="catalog-list" class="grid grid-cols-2 gap-3 pb-10"></div>
+    </div>
+
+    <div id="tab-pos" class="tab-content hidden pb-10">
+        <div class="flex flex-col gap-4">
+            <div class="w-full">
+                <h2 class="text-sm mb-2 opacity-70 font-bold uppercase tracking-wider px-1">Quick Select</h2>
+                <div id="pos-select-list" class="grid grid-cols-3 gap-2 max-h-[25vh] overflow-y-auto p-1"></div>
+            </div>
+            
+            <div class="glass-card p-5 w-full shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-bold text-sm">Current Bill</h2>
+                    <span class="text-accent font-mono font-bold" id="next-bill-no-display">#1001</span>
+                </div>
+                <div id="cart-items" class="space-y-2 mb-4 min-h-[120px] max-h-[25vh] overflow-y-auto border-b border-white/10 pb-4"></div>
+                <div class="flex justify-between mb-4 font-bold text-xl text-accent">
+                    <span>Total</span>
+                    <span id="total-price">RM 0.00</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="processTransaction('QUOTATION')" class="border border-accent text-accent py-3 rounded-xl text-xs font-bold hover:bg-accent/10 transition">QUOTATION</button>
+                        <button onclick="processTransaction('INVOICE')" class="border border-blue-500 text-blue-500 py-3 rounded-xl text-xs font-bold hover:bg-blue-500/10 transition">INVOICE</button>
+                    </div>
+                    <button onclick="processTransaction('RECEIPT')" class="w-full btn-primary py-4 rounded-xl font-bold shadow-lg">CONFIRM RECEIPT</button>
+                    <button onclick="cancelBill()" class="w-full text-xs opacity-50 py-3 mt-1">Cancel Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-inventory" class="tab-content hidden pb-10">
+        <div class="glass-card p-5 mb-5">
+            <h2 class="font-bold mb-4 text-sm">Add New Product</h2>
+            <div class="grid grid-cols-1 gap-3">
+                <input type="text" id="p-name" placeholder="Product Name" class="p-3 text-sm rounded-xl">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="p-price" placeholder="Price (RM)" class="p-3 text-sm rounded-xl">
+                    <input type="number" id="p-qty" placeholder="Stock Qty" class="p-3 text-sm rounded-xl">
+                </div>
+                <input type="file" id="p-img" class="text-xs pt-2 cursor-pointer w-full text-muted">
+            </div>
+            <button onclick="addNewProduct()" class="w-full btn-primary mt-4 py-3 rounded-xl font-bold text-sm">Save Product</button>
+        </div>
+        <div id="inventory-list" class="space-y-2"></div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
