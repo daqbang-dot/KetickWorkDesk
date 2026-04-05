@@ -35,6 +35,7 @@
                 <i class="fas fa-user-circle"></i>
             </div>
         </header>
+        
         <div class="main-area">
             <div class="main-area-header">
                 <span class="project-selector">Projek Semasa</span>
@@ -42,17 +43,21 @@
             </div>
             
             <div class="flowchart-canvas">
+                
                 <div class="node" id="zone1">
                     <h3><i class="fas fa-archway"></i>1. Arsitektur</h3>
                     <p>Pendaftaran, Model Data & Logik</p>
                     <div class="status">○ Connecting...</div>
                     <div class="admin-controls">
                         <button onclick="window.openWorkspace('zone1', 'arsitektur', 'p')" style="border-color: var(--yellow); color: var(--yellow);">P</button>
-                        <button onclick="window.updateStatus('zone1', 'Active')">A</button>
+                        
+                        <button onclick="window.openWorkspace('zone1', 'arsitektur', 'a')" style="border-color: var(--blue); color: var(--blue);">A</button>
+                        
                         <button onclick="window.updateStatus('zone1', 'Designing')">D</button>
                         <button onclick="window.updateStatus('zone1', 'Done')" style="color:var(--green)">OK</button>
                     </div>
                 </div>
+
                 <div class="node" id="zone2">
                     <h3><i class="fas fa-folder-open"></i>2. Struktur Fail</h3>
                     <p>HTML, CSS, JS Architecture.</p>
@@ -64,6 +69,7 @@
                         <button onclick="window.updateStatus('zone2', 'Done')" style="color:var(--green)">OK</button>
                     </div>
                 </div>
+
                 <div class="node" id="zone3">
                     <h3><i class="fas fa-bridge"></i>3. Integrasi</h3>
                     <p>GitHub & Firebase Connection.</p>
@@ -75,6 +81,7 @@
                         <button onclick="window.updateStatus('zone3', 'Done')" style="color:var(--green)">OK</button>
                     </div>
                 </div>
+
                 <div class="node" id="zone4">
                     <h3><i class="fas fa-paper-plane"></i>4. Workflow</h3>
                     <p>Sequence & Deployment.</p>
