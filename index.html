@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KETICK WorkDesk | Command Center</title>
+    <title>KETICK WorkDesk | Flowchart Hub</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -12,59 +12,121 @@
             --neon-green: #39ff14;
             --text: #e0e0e0;
         }
+        
         body {
             background-color: var(--bg);
+            /* Corak Dot Grid seperti canvas flowchart */
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
             color: var(--text);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         header {
-            border-bottom: 2px solid var(--neon-blue);
-            padding-bottom: 10px;
-            margin-bottom: 30px;
             text-align: center;
-        }
-        .grid-container {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-        .zone-card {
-            background: var(--card-bg);
+            margin-bottom: 40px;
+            background: var(--bg);
+            padding: 10px 30px;
+            border-radius: 10px;
             border: 1px solid #333;
-            border-left: 5px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        h1 { margin: 0; color: var(--text); }
+        h1 span { color: var(--neon-blue); }
+
+        /* Container Carta Alir */
+        .flowchart-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px; /* Jarak antara node untuk laluan garisan */
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        /* Reka Bentuk Node */
+        .node {
+            background: var(--card-bg);
+            border: 2px solid #333;
+            border-radius: 20px;
             padding: 20px;
-            border-radius: 8px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             transition: 0.3s;
         }
-        .zone-card:hover {
-            box-shadow: 0 0 15px var(--neon-blue);
+
+        .node:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
-        h3 { color: var(--neon-blue); margin-top: 0; }
+
+        /* Garisan Penyambung (Connector) */
+        .node:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: -52px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 50px;
+            background-color: #555;
+            z-index: 1;
+        }
+
+        /* Anak Panah (Arrowhead) */
+        .node:not(:last-child)::before {
+            content: '▼';
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #555;
+            font-size: 14px;
+            z-index: 3;
+        }
+
+        h3 { color: var(--neon-blue); margin-top: 0; margin-bottom: 5px; font-size: 1.1rem; }
+        p { margin: 0 0 15px 0; font-size: 0.85rem; color: #888; }
+        
         .status {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #ffaa00; /* Default pending color */
-            margin-bottom: 10px;
+            font-weight: bold;
+            color: #ffaa00;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
         }
-        
-        /* Gaya Butang Kawalan Admin */
+
+        /* Butang Kawalan Admin */
         .admin-controls {
             margin-top: 15px;
             display: flex;
-            gap: 5px;
-            border-top: 1px solid #333;
-            padding-top: 10px;
+            justify-content: center;
+            gap: 8px;
+            border-top: 1px dashed #444;
+            padding-top: 15px;
         }
         .admin-controls button {
             background: #222;
             border: 1px solid #444;
             color: #fff;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -72,89 +134,99 @@
             border-color: var(--neon-blue);
             background: #333;
         }
+        .btn-ok:hover { border-color: var(--neon-green) !important; color: var(--neon-green); }
 
         .ai-panel {
-            margin-top: 40px;
-            background: rgba(0, 242, 255, 0.1);
-            padding: 20px;
-            border: 1px dashed var(--neon-blue);
-            border-radius: 10px;
+            margin-top: 60px;
+            background: var(--bg);
+            padding: 15px 25px;
+            border: 1px solid var(--neon-blue);
+            border-left: 5px solid var(--neon-blue);
+            border-radius: 8px;
+            width: 80%; /* Dikecilkan sedikit untuk mobile */
+            max-width: 400px;
+            text-align: center;
         }
+        .ai-panel h3 { color: var(--text); font-size: 1rem; }
+
         button#reset-btn {
             background: none;
             border: 1px solid #444;
             color: #666;
             font-size: 10px;
-            margin-top: 20px;
+            margin-top: 30px;
             cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
+            padding: 8px 15px;
+            border-radius: 20px;
         }
+        button#reset-btn:hover { background: #222; color: #fff; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>KETICK WorkDesk v1.0</h1>
-    <p>Project Workflow & Logic Hub</p>
+    <h1>KETICK<span>WorkDesk</span></h1>
+    <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">Logic Flow & Automation Hub</div>
 </header>
 
-<div class="grid-container">
-    <div class="zone-card" id="zone1">
-        <h3>🏗️ Zon Arsitektur</h3>
-        <p>Data Model & Logic Mapping.</p>
+<div class="flowchart-canvas">
+    
+    <div class="node" id="zone1">
+        <h3>1. Arsitektur</h3>
+        <p>Data Model & Logic Mapping</p>
         <div class="status">○ Connecting...</div>
         <div class="admin-controls">
             <button onclick="updateStatus('zone1', 'Pending')">P</button>
             <button onclick="updateStatus('zone1', 'Active')">A</button>
             <button onclick="updateStatus('zone1', 'Designing')">D</button>
-            <button onclick="updateStatus('zone1', 'Done')" style="color:var(--neon-green)">OK</button>
+            <button class="btn-ok" onclick="updateStatus('zone1', 'Done')">OK</button>
         </div>
     </div>
 
-    <div class="zone-card" id="zone2">
-        <h3>📂 Zon Struktur Fail</h3>
-        <p>HTML, CSS, JS Architecture.</p>
+    <div class="node" id="zone2">
+        <h3>2. Struktur Fail</h3>
+        <p>HTML, CSS, JS Architecture</p>
         <div class="status">○ Connecting...</div>
         <div class="admin-controls">
             <button onclick="updateStatus('zone2', 'Pending')">P</button>
             <button onclick="updateStatus('zone2', 'Active')">A</button>
             <button onclick="updateStatus('zone2', 'Designing')">D</button>
-            <button onclick="updateStatus('zone2', 'Done')" style="color:var(--neon-green)">OK</button>
+            <button class="btn-ok" onclick="updateStatus('zone2', 'Done')">OK</button>
         </div>
     </div>
 
-    <div class="zone-card" id="zone3">
-        <h3>🌉 Zon Integrasi</h3>
-        <p>GitHub & Firebase Connection.</p>
+    <div class="node" id="zone3">
+        <h3>3. Integrasi</h3>
+        <p>GitHub & Firebase Connection</p>
         <div class="status">○ Connecting...</div>
         <div class="admin-controls">
             <button onclick="updateStatus('zone3', 'Pending')">P</button>
             <button onclick="updateStatus('zone3', 'Active')">A</button>
             <button onclick="updateStatus('zone3', 'Designing')">D</button>
-            <button onclick="updateStatus('zone3', 'Done')" style="color:var(--neon-green)">OK</button>
+            <button class="btn-ok" onclick="updateStatus('zone3', 'Done')">OK</button>
         </div>
     </div>
 
-    <div class="zone-card" id="zone4">
-        <h3>🚀 Zon Workflow</h3>
-        <p>Sequence & Deployment.</p>
+    <div class="node" id="zone4">
+        <h3>4. Workflow</h3>
+        <p>Sequence & Deployment</p>
         <div class="status">○ Connecting...</div>
         <div class="admin-controls">
             <button onclick="updateStatus('zone4', 'Pending')">P</button>
             <button onclick="updateStatus('zone4', 'Active')">A</button>
             <button onclick="updateStatus('zone4', 'Designing')">D</button>
-            <button onclick="updateStatus('zone4', 'Done')" style="color:var(--neon-green)">OK</button>
+            <button class="btn-ok" onclick="updateStatus('zone4', 'Done')">OK</button>
         </div>
     </div>
+
 </div>
 
 <div class="ai-panel">
-    <h3>🤖 AI Technical Consultant (Ditepi)</h3>
-    <p id="ai-suggestion">Membasuh enjin sistem...</p>
+    <h3>🤖 AI Consultant</h3>
+    <p id="ai-suggestion" style="margin: 0; font-size: 0.85rem; color: #aaa;">Sistem dimulakan...</p>
 </div>
 
-<button id="reset-btn" onclick="resetConfig()">Reset Local Config</button>
+<button id="reset-btn" onclick="resetConfig()">Reset Config</button>
 
 <script>
     function getLocalConfig() {
@@ -169,7 +241,6 @@
         }
     }
 
-    // Prompt user jika config tiada
     const currentConfig = getLocalConfig();
     if (!currentConfig) {
         const apiKey = prompt("SISTEM: Masukkan Firebase API Key:");
@@ -202,21 +273,17 @@
             const app = initializeApp(firebaseConfig);
             const db = getDatabase(app);
             
-            // Fungsi Global supaya butang HTML boleh panggil
             window.updateStatus = function(zoneId, newStatus) {
                 const statusRef = ref(db, `zones/${zoneId}/status`);
                 set(statusRef, newStatus)
                     .then(() => {
-                        console.log(`Status ${zoneId} dikemaskini kepada ${newStatus}!`);
-                        document.getElementById('ai-suggestion').innerText = `Tindakan: ${zoneId} ditukar kepada ${newStatus}.`;
+                        document.getElementById('ai-suggestion').innerText = `Tindakan: ${zoneId} -> ${newStatus}`;
                     })
                     .catch((error) => alert("Ralat: " + error.message));
             };
 
-            document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Admin Mode Active.`;
-            console.log("Firebase Connected!");
+            document.getElementById('ai-suggestion').innerText = `Live: Disambung ke ${config.projectId}`;
 
-            // Fungsi untuk kemaskini UI secara automatik dari path: zones/zoneID/status
             function listenToZone(zoneId) {
                 const statusRef = ref(db, `zones/${zoneId}/status`);
                 onValue(statusRef, (snapshot) => {
@@ -226,22 +293,21 @@
                         const statusDisplay = cardElement.querySelector('.status');
                         statusDisplay.innerText = `● ${statusText}`;
                         
-                        // Tukar warna mengikut status
                         if(statusText.toLowerCase() === 'active' || statusText.toLowerCase() === 'done') {
                             statusDisplay.style.color = 'var(--neon-green)';
+                            cardElement.style.borderColor = 'var(--neon-green)';
                         } else {
                             statusDisplay.style.color = '#ffaa00';
+                            cardElement.style.borderColor = '#333';
                         }
                     }
                 });
             }
 
-            // Jalankan pendengar untuk semua zon
             ['zone1', 'zone2', 'zone3', 'zone4'].forEach(listenToZone);
 
         } catch (error) {
-            document.getElementById('ai-suggestion').innerText = "Ralat Integrasi: Sila semak API Key & Project ID anda.";
-            console.error(error);
+            document.getElementById('ai-suggestion').innerText = "Ralat: Semak API Key.";
         }
     }
 </script>
