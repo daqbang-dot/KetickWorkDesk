@@ -75,25 +75,25 @@
 </header>
 
 <div class="grid-container">
-    <div class="zone-card">
+    <div class="zone-card" id="zone1">
         <h3>🏗️ Zon Arsitektur</h3>
         <p>Data Model & Logic Mapping.</p>
         <div class="status">● Active</div>
     </div>
 
-    <div class="zone-card">
+    <div class="zone-card" id="zone2">
         <h3>📂 Zon Struktur Fail</h3>
         <p>HTML, CSS, JS Architecture.</p>
         <div class="status">● Designing</div>
     </div>
 
-    <div class="zone-card">
+    <div class="zone-card" id="zone3">
         <h3>🌉 Zon Integrasi</h3>
         <p>GitHub & Firebase Connection.</p>
         <div class="status" style="color: #ffaa00;">○ Pending</div>
     </div>
 
-    <div class="zone-card">
+    <div class="zone-card" id="zone4">
         <h3>🚀 Zon Workflow</h3>
         <p>Sequence & Deployment.</p>
         <div class="status" style="color: #ffaa00;">○ Pending</div>
@@ -102,41 +102,17 @@
 
 <div class="ai-panel">
     <h3>🤖 AI Technical Consultant (Ditepi)</h3>
-    <p id="ai-suggestion">"Sedia membantu. Panggil saya jika ada ralat atau perlukan pandangan teknikal."</p>
+    <p id="ai-suggestion">Membasuh enjin sistem...</p>
 </div>
 
 <button id="reset-btn" onclick="resetConfig()">Reset Local Config</button>
 
 <script>
-    // 1. Fungsi untuk ambil config dari Local Storage (Hanya di Telefon Anda)
     function getLocalConfig() {
         const savedConfig = localStorage.getItem('ketick_firebase_config');
         return savedConfig ? JSON.parse(savedConfig) : null;
     }
 
-    // 2. Jika tiada config, minta user masukkan
-    function setupWorkDesk() {
-        const config = getLocalConfig();
-        
-        if (!config) {
-            const apiKey = prompt("SISTEM: Masukkan Firebase API Key anda (Hanya disimpan secara lokal di telefon ini):");
-            if (apiKey) {
-                const newConfig = { 
-                    apiKey: apiKey, 
-                    projectId: "ketick-workdesk" 
-                };
-                localStorage.setItem('ketick_firebase_config', JSON.stringify(newConfig));
-                alert("SUCCESS: Config disimpan secara selamat di Local Storage!");
-                location.reload();
-            }
-        } else {
-            console.log("KETICKWorkDesk Active: Menggunakan Local Secure Key.");
-            document.getElementById('ai-suggestion').innerText = "System Live. Config dikesan secara lokal. Sedia untuk integrasi Firebase.";
-            // Panggil initializeFirebase(config) di sini selepas SDK dimasukkan
-        }
-    }
-
-    // 3. Fungsi Reset jika ingin tukar API Key
     function resetConfig() {
         if(confirm("Padam config lokal?")) {
             localStorage.removeItem('ketick_firebase_config');
@@ -144,7 +120,52 @@
         }
     }
 
-    window.onload = setupWorkDesk;
+    // Prompt user jika config tiada
+    const currentConfig = getLocalConfig();
+    if (!currentConfig) {
+        const apiKey = prompt("SISTEM: Masukkan Firebase API Key:");
+        const projectId = prompt("SISTEM: Masukkan Firebase Project ID:");
+        
+        if (apiKey && projectId) {
+            const newConfig = { apiKey, projectId };
+            localStorage.setItem('ketick_firebase_config', JSON.stringify(newConfig));
+            location.reload();
+        }
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    const config = JSON.parse(localStorage.getItem('ketick_firebase_config'));
+
+    if (config) {
+        // Bina config secara dinamik supaya tiada Project ID dalam GitHub
+        const firebaseConfig = {
+            apiKey: config.apiKey,
+            authDomain: `${config.projectId}.firebaseapp.com`,
+            databaseURL: `https://${config.projectId}-default-rtdb.firebaseio.com`,
+            projectId: config.projectId,
+            storageBucket: `${config.projectId}.appspot.com`,
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            
+            document.getElementById('ai-suggestion').innerText = `System Live: Disambungkan ke ${config.projectId}. Sedia untuk perbincangan.`;
+            console.log("Firebase Connected!");
+
+            // Contoh: Pantau status dari database secara Realtime (Zon 3)
+            // const statusRef = ref(db, 'zones/zone3/status');
+            // onValue(statusRef, (snapshot) => { /* Update UI */ });
+
+        } catch (error) {
+            document.getElementById('ai-suggestion').innerText = "Ralat Integrasi: Sila semak API Key & Project ID anda.";
+            console.error(error);
+        }
+    }
 </script>
 
 </body>
